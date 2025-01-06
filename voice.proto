@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package voice;
 
+option go_package = "voice-assistant/client/proto";
+
 // Reusable Types
 message AudioChunk {
   bytes audio_data = 1;  // Audio data chunk for Text-to-Speech and Speech-to-Text
@@ -37,30 +39,30 @@ message SpeechToTextResponse {
 
 // Text-to-Speech Service
 service TextToSpeechService {
-  // Simple: Text in, Audio out
-  rpc ConvertTextToSpeech(TextToSpeechRequest) returns (TextToSpeechResponse);
+  // Unary: Text in, Audio out
+  rpc UnaryConvertTextToSpeech(TextToSpeechRequest) returns (TextToSpeechResponse);
 
-  // Stream response: Long text in, stream of audio chunks out
-  rpc StreamTextToSpeech(TextToSpeechRequest) returns (stream AudioChunk);
+  // Server streaming: Long text in, stream of audio chunks out
+  rpc ServerStreamTextToSpeech(TextToSpeechRequest) returns (stream AudioChunk);
 
-  // Stream request: Stream of text chunks in, complete audio out
-  rpc StreamTextToSpeechRequest(stream TextChunk) returns (TextToSpeechResponse);
+  // Client streaming: Stream of text chunks in, complete audio out
+  rpc ClientStreamTextToSpeech(stream TextChunk) returns (TextToSpeechResponse);
 
-  // Bidirectional: Stream of text chunks in, stream of audio chunks out
-  rpc StreamTextToSpeechBidirectional(stream TextChunk) returns (stream AudioChunk);
+  // Bidirectional streaming: Stream of text chunks in, stream of audio chunks out
+  rpc BidirectionalStreamTextToSpeech(stream TextChunk) returns (stream AudioChunk);
 }
 
 // Speech-to-Text Service
 service SpeechToTextService {
-  // Simple: Audio in, Text out
-  rpc ConvertSpeechToText(SpeechToTextRequest) returns (SpeechToTextResponse);
+  // Unary: Audio in, Text out
+  rpc UnaryConvertSpeechToText(SpeechToTextRequest) returns (SpeechToTextResponse);
 
-  // Stream response: Complete audio in, stream of text chunks out
-  rpc StreamSpeechToText(SpeechToTextRequest) returns (stream TranscriptionChunk);
+  // Server streaming: Complete audio in, stream of text chunks out
+  rpc ServerStreamSpeechToText(SpeechToTextRequest) returns (stream TranscriptionChunk);
 
-  // Stream request: Stream of audio chunks in, complete text out
-  rpc StreamSpeechToTextRequest(stream AudioChunk) returns (SpeechToTextResponse);
+  // Client streaming: Stream of audio chunks in, complete text out
+  rpc ClientStreamSpeechToText(stream AudioChunk) returns (SpeechToTextResponse);
 
-  // Bidirectional: Stream of audio chunks in, stream of text chunks out
-  rpc StreamSpeechToTextBidirectional(stream AudioChunk) returns (stream TranscriptionChunk);
+  // Bidirectional streaming: Stream of audio chunks in, stream of text chunks out
+  rpc BidirectionalStreamSpeechToText(stream AudioChunk) returns (stream TranscriptionChunk);
 } 

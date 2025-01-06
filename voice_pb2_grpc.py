@@ -15,23 +15,23 @@ class TextToSpeechServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ConvertTextToSpeech = channel.unary_unary(
-                '/voice.TextToSpeechService/ConvertTextToSpeech',
+        self.UnaryConvertTextToSpeech = channel.unary_unary(
+                '/voice.TextToSpeechService/UnaryConvertTextToSpeech',
                 request_serializer=voice__pb2.TextToSpeechRequest.SerializeToString,
                 response_deserializer=voice__pb2.TextToSpeechResponse.FromString,
                 )
-        self.StreamTextToSpeech = channel.unary_stream(
-                '/voice.TextToSpeechService/StreamTextToSpeech',
+        self.ServerStreamTextToSpeech = channel.unary_stream(
+                '/voice.TextToSpeechService/ServerStreamTextToSpeech',
                 request_serializer=voice__pb2.TextToSpeechRequest.SerializeToString,
                 response_deserializer=voice__pb2.AudioChunk.FromString,
                 )
-        self.StreamTextToSpeechRequest = channel.stream_unary(
-                '/voice.TextToSpeechService/StreamTextToSpeechRequest',
+        self.ClientStreamTextToSpeech = channel.stream_unary(
+                '/voice.TextToSpeechService/ClientStreamTextToSpeech',
                 request_serializer=voice__pb2.TextChunk.SerializeToString,
                 response_deserializer=voice__pb2.TextToSpeechResponse.FromString,
                 )
-        self.StreamTextToSpeechBidirectional = channel.stream_stream(
-                '/voice.TextToSpeechService/StreamTextToSpeechBidirectional',
+        self.BidirectionalStreamTextToSpeech = channel.stream_stream(
+                '/voice.TextToSpeechService/BidirectionalStreamTextToSpeech',
                 request_serializer=voice__pb2.TextChunk.SerializeToString,
                 response_deserializer=voice__pb2.AudioChunk.FromString,
                 )
@@ -41,29 +41,29 @@ class TextToSpeechServiceServicer(object):
     """Text-to-Speech Service
     """
 
-    def ConvertTextToSpeech(self, request, context):
-        """Simple: Text in, Audio out
+    def UnaryConvertTextToSpeech(self, request, context):
+        """Unary: Text in, Audio out
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StreamTextToSpeech(self, request, context):
-        """Stream response: Long text in, stream of audio chunks out
+    def ServerStreamTextToSpeech(self, request, context):
+        """Server streaming: Long text in, stream of audio chunks out
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StreamTextToSpeechRequest(self, request_iterator, context):
-        """Stream request: Stream of text chunks in, complete audio out
+    def ClientStreamTextToSpeech(self, request_iterator, context):
+        """Client streaming: Stream of text chunks in, complete audio out
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StreamTextToSpeechBidirectional(self, request_iterator, context):
-        """Bidirectional: Stream of text chunks in, stream of audio chunks out
+    def BidirectionalStreamTextToSpeech(self, request_iterator, context):
+        """Bidirectional streaming: Stream of text chunks in, stream of audio chunks out
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -72,23 +72,23 @@ class TextToSpeechServiceServicer(object):
 
 def add_TextToSpeechServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ConvertTextToSpeech': grpc.unary_unary_rpc_method_handler(
-                    servicer.ConvertTextToSpeech,
+            'UnaryConvertTextToSpeech': grpc.unary_unary_rpc_method_handler(
+                    servicer.UnaryConvertTextToSpeech,
                     request_deserializer=voice__pb2.TextToSpeechRequest.FromString,
                     response_serializer=voice__pb2.TextToSpeechResponse.SerializeToString,
             ),
-            'StreamTextToSpeech': grpc.unary_stream_rpc_method_handler(
-                    servicer.StreamTextToSpeech,
+            'ServerStreamTextToSpeech': grpc.unary_stream_rpc_method_handler(
+                    servicer.ServerStreamTextToSpeech,
                     request_deserializer=voice__pb2.TextToSpeechRequest.FromString,
                     response_serializer=voice__pb2.AudioChunk.SerializeToString,
             ),
-            'StreamTextToSpeechRequest': grpc.stream_unary_rpc_method_handler(
-                    servicer.StreamTextToSpeechRequest,
+            'ClientStreamTextToSpeech': grpc.stream_unary_rpc_method_handler(
+                    servicer.ClientStreamTextToSpeech,
                     request_deserializer=voice__pb2.TextChunk.FromString,
                     response_serializer=voice__pb2.TextToSpeechResponse.SerializeToString,
             ),
-            'StreamTextToSpeechBidirectional': grpc.stream_stream_rpc_method_handler(
-                    servicer.StreamTextToSpeechBidirectional,
+            'BidirectionalStreamTextToSpeech': grpc.stream_stream_rpc_method_handler(
+                    servicer.BidirectionalStreamTextToSpeech,
                     request_deserializer=voice__pb2.TextChunk.FromString,
                     response_serializer=voice__pb2.AudioChunk.SerializeToString,
             ),
@@ -104,7 +104,7 @@ class TextToSpeechService(object):
     """
 
     @staticmethod
-    def ConvertTextToSpeech(request,
+    def UnaryConvertTextToSpeech(request,
             target,
             options=(),
             channel_credentials=None,
@@ -114,14 +114,14 @@ class TextToSpeechService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/voice.TextToSpeechService/ConvertTextToSpeech',
+        return grpc.experimental.unary_unary(request, target, '/voice.TextToSpeechService/UnaryConvertTextToSpeech',
             voice__pb2.TextToSpeechRequest.SerializeToString,
             voice__pb2.TextToSpeechResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def StreamTextToSpeech(request,
+    def ServerStreamTextToSpeech(request,
             target,
             options=(),
             channel_credentials=None,
@@ -131,14 +131,14 @@ class TextToSpeechService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/voice.TextToSpeechService/StreamTextToSpeech',
+        return grpc.experimental.unary_stream(request, target, '/voice.TextToSpeechService/ServerStreamTextToSpeech',
             voice__pb2.TextToSpeechRequest.SerializeToString,
             voice__pb2.AudioChunk.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def StreamTextToSpeechRequest(request_iterator,
+    def ClientStreamTextToSpeech(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -148,14 +148,14 @@ class TextToSpeechService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/voice.TextToSpeechService/StreamTextToSpeechRequest',
+        return grpc.experimental.stream_unary(request_iterator, target, '/voice.TextToSpeechService/ClientStreamTextToSpeech',
             voice__pb2.TextChunk.SerializeToString,
             voice__pb2.TextToSpeechResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def StreamTextToSpeechBidirectional(request_iterator,
+    def BidirectionalStreamTextToSpeech(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -165,7 +165,7 @@ class TextToSpeechService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/voice.TextToSpeechService/StreamTextToSpeechBidirectional',
+        return grpc.experimental.stream_stream(request_iterator, target, '/voice.TextToSpeechService/BidirectionalStreamTextToSpeech',
             voice__pb2.TextChunk.SerializeToString,
             voice__pb2.AudioChunk.FromString,
             options, channel_credentials,
@@ -182,23 +182,23 @@ class SpeechToTextServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ConvertSpeechToText = channel.unary_unary(
-                '/voice.SpeechToTextService/ConvertSpeechToText',
+        self.UnaryConvertSpeechToText = channel.unary_unary(
+                '/voice.SpeechToTextService/UnaryConvertSpeechToText',
                 request_serializer=voice__pb2.SpeechToTextRequest.SerializeToString,
                 response_deserializer=voice__pb2.SpeechToTextResponse.FromString,
                 )
-        self.StreamSpeechToText = channel.unary_stream(
-                '/voice.SpeechToTextService/StreamSpeechToText',
+        self.ServerStreamSpeechToText = channel.unary_stream(
+                '/voice.SpeechToTextService/ServerStreamSpeechToText',
                 request_serializer=voice__pb2.SpeechToTextRequest.SerializeToString,
                 response_deserializer=voice__pb2.TranscriptionChunk.FromString,
                 )
-        self.StreamSpeechToTextRequest = channel.stream_unary(
-                '/voice.SpeechToTextService/StreamSpeechToTextRequest',
+        self.ClientStreamSpeechToText = channel.stream_unary(
+                '/voice.SpeechToTextService/ClientStreamSpeechToText',
                 request_serializer=voice__pb2.AudioChunk.SerializeToString,
                 response_deserializer=voice__pb2.SpeechToTextResponse.FromString,
                 )
-        self.StreamSpeechToTextBidirectional = channel.stream_stream(
-                '/voice.SpeechToTextService/StreamSpeechToTextBidirectional',
+        self.BidirectionalStreamSpeechToText = channel.stream_stream(
+                '/voice.SpeechToTextService/BidirectionalStreamSpeechToText',
                 request_serializer=voice__pb2.AudioChunk.SerializeToString,
                 response_deserializer=voice__pb2.TranscriptionChunk.FromString,
                 )
@@ -208,29 +208,29 @@ class SpeechToTextServiceServicer(object):
     """Speech-to-Text Service
     """
 
-    def ConvertSpeechToText(self, request, context):
-        """Simple: Audio in, Text out
+    def UnaryConvertSpeechToText(self, request, context):
+        """Unary: Audio in, Text out
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StreamSpeechToText(self, request, context):
-        """Stream response: Complete audio in, stream of text chunks out
+    def ServerStreamSpeechToText(self, request, context):
+        """Server streaming: Complete audio in, stream of text chunks out
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StreamSpeechToTextRequest(self, request_iterator, context):
-        """Stream request: Stream of audio chunks in, complete text out
+    def ClientStreamSpeechToText(self, request_iterator, context):
+        """Client streaming: Stream of audio chunks in, complete text out
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StreamSpeechToTextBidirectional(self, request_iterator, context):
-        """Bidirectional: Stream of audio chunks in, stream of text chunks out
+    def BidirectionalStreamSpeechToText(self, request_iterator, context):
+        """Bidirectional streaming: Stream of audio chunks in, stream of text chunks out
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -239,23 +239,23 @@ class SpeechToTextServiceServicer(object):
 
 def add_SpeechToTextServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ConvertSpeechToText': grpc.unary_unary_rpc_method_handler(
-                    servicer.ConvertSpeechToText,
+            'UnaryConvertSpeechToText': grpc.unary_unary_rpc_method_handler(
+                    servicer.UnaryConvertSpeechToText,
                     request_deserializer=voice__pb2.SpeechToTextRequest.FromString,
                     response_serializer=voice__pb2.SpeechToTextResponse.SerializeToString,
             ),
-            'StreamSpeechToText': grpc.unary_stream_rpc_method_handler(
-                    servicer.StreamSpeechToText,
+            'ServerStreamSpeechToText': grpc.unary_stream_rpc_method_handler(
+                    servicer.ServerStreamSpeechToText,
                     request_deserializer=voice__pb2.SpeechToTextRequest.FromString,
                     response_serializer=voice__pb2.TranscriptionChunk.SerializeToString,
             ),
-            'StreamSpeechToTextRequest': grpc.stream_unary_rpc_method_handler(
-                    servicer.StreamSpeechToTextRequest,
+            'ClientStreamSpeechToText': grpc.stream_unary_rpc_method_handler(
+                    servicer.ClientStreamSpeechToText,
                     request_deserializer=voice__pb2.AudioChunk.FromString,
                     response_serializer=voice__pb2.SpeechToTextResponse.SerializeToString,
             ),
-            'StreamSpeechToTextBidirectional': grpc.stream_stream_rpc_method_handler(
-                    servicer.StreamSpeechToTextBidirectional,
+            'BidirectionalStreamSpeechToText': grpc.stream_stream_rpc_method_handler(
+                    servicer.BidirectionalStreamSpeechToText,
                     request_deserializer=voice__pb2.AudioChunk.FromString,
                     response_serializer=voice__pb2.TranscriptionChunk.SerializeToString,
             ),
@@ -271,7 +271,7 @@ class SpeechToTextService(object):
     """
 
     @staticmethod
-    def ConvertSpeechToText(request,
+    def UnaryConvertSpeechToText(request,
             target,
             options=(),
             channel_credentials=None,
@@ -281,14 +281,14 @@ class SpeechToTextService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/voice.SpeechToTextService/ConvertSpeechToText',
+        return grpc.experimental.unary_unary(request, target, '/voice.SpeechToTextService/UnaryConvertSpeechToText',
             voice__pb2.SpeechToTextRequest.SerializeToString,
             voice__pb2.SpeechToTextResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def StreamSpeechToText(request,
+    def ServerStreamSpeechToText(request,
             target,
             options=(),
             channel_credentials=None,
@@ -298,14 +298,14 @@ class SpeechToTextService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/voice.SpeechToTextService/StreamSpeechToText',
+        return grpc.experimental.unary_stream(request, target, '/voice.SpeechToTextService/ServerStreamSpeechToText',
             voice__pb2.SpeechToTextRequest.SerializeToString,
             voice__pb2.TranscriptionChunk.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def StreamSpeechToTextRequest(request_iterator,
+    def ClientStreamSpeechToText(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -315,14 +315,14 @@ class SpeechToTextService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/voice.SpeechToTextService/StreamSpeechToTextRequest',
+        return grpc.experimental.stream_unary(request_iterator, target, '/voice.SpeechToTextService/ClientStreamSpeechToText',
             voice__pb2.AudioChunk.SerializeToString,
             voice__pb2.SpeechToTextResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def StreamSpeechToTextBidirectional(request_iterator,
+    def BidirectionalStreamSpeechToText(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -332,7 +332,7 @@ class SpeechToTextService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/voice.SpeechToTextService/StreamSpeechToTextBidirectional',
+        return grpc.experimental.stream_stream(request_iterator, target, '/voice.SpeechToTextService/BidirectionalStreamSpeechToText',
             voice__pb2.AudioChunk.SerializeToString,
             voice__pb2.TranscriptionChunk.FromString,
             options, channel_credentials,

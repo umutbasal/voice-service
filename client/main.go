@@ -69,7 +69,7 @@ func simpleTextToSpeech(client pb.TextToSpeechServiceClient) {
 	defer cancel()
 
 	text := "Салом, хуш келибсиз!"
-	resp, err := client.ConvertTextToSpeech(ctx, &pb.TextToSpeechRequest{
+	resp, err := client.UnaryConvertTextToSpeech(ctx, &pb.TextToSpeechRequest{
 		Text:     text,
 		Language: "uz",
 		Voice:    "default",
@@ -92,7 +92,7 @@ func streamingTextToSpeech(client pb.TextToSpeechServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	stream, err := client.StreamTextToSpeech(ctx, &pb.TextToSpeechRequest{
+	stream, err := client.ServerStreamTextToSpeech(ctx, &pb.TextToSpeechRequest{
 		Text:     uzbekText,
 		Language: "uz",
 		Voice:    "default",
@@ -130,7 +130,7 @@ func streamTextRequestToSpeech(client pb.TextToSpeechServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	stream, err := client.StreamTextToSpeechRequest(ctx)
+	stream, err := client.ClientStreamTextToSpeech(ctx)
 	if err != nil {
 		log.Fatalf("could not create stream: %v", err)
 	}
@@ -166,7 +166,7 @@ func bidirectionalTextToSpeech(client pb.TextToSpeechServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	stream, err := client.StreamTextToSpeechBidirectional(ctx)
+	stream, err := client.BidirectionalStreamTextToSpeech(ctx)
 	if err != nil {
 		log.Fatalf("could not create stream: %v", err)
 	}
@@ -227,7 +227,7 @@ func simpleSpeechToText(client pb.SpeechToTextServiceClient) {
 		log.Fatalf("could not read audio file: %v", err)
 	}
 
-	resp, err := client.ConvertSpeechToText(ctx, &pb.SpeechToTextRequest{
+	resp, err := client.UnaryConvertSpeechToText(ctx, &pb.SpeechToTextRequest{
 		AudioData: audioData,
 	})
 	if err != nil {
@@ -247,7 +247,7 @@ func streamingSpeechToText(client pb.SpeechToTextServiceClient) {
 		log.Fatalf("could not read audio file: %v", err)
 	}
 
-	stream, err := client.StreamSpeechToText(ctx, &pb.SpeechToTextRequest{
+	stream, err := client.ServerStreamSpeechToText(ctx, &pb.SpeechToTextRequest{
 		AudioData: audioData,
 	})
 	if err != nil {
@@ -270,7 +270,7 @@ func streamSpeechRequestToText(client pb.SpeechToTextServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	stream, err := client.StreamSpeechToTextRequest(ctx)
+	stream, err := client.ClientStreamSpeechToText(ctx)
 	if err != nil {
 		log.Fatalf("could not create stream: %v", err)
 	}
@@ -305,7 +305,7 @@ func bidirectionalSpeechToText(client pb.SpeechToTextServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	stream, err := client.StreamSpeechToTextBidirectional(ctx)
+	stream, err := client.BidirectionalStreamSpeechToText(ctx)
 	if err != nil {
 		log.Fatalf("could not create stream: %v", err)
 	}

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v4.25.3
-// source: proto/voice.proto
+// source: voice.proto
 
 package proto
 
@@ -22,14 +22,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TextToSpeechServiceClient interface {
-	// Simple: Text in, Audio out
-	ConvertTextToSpeech(ctx context.Context, in *TextToSpeechRequest, opts ...grpc.CallOption) (*TextToSpeechResponse, error)
-	// Stream response: Long text in, stream of audio chunks out
-	StreamTextToSpeech(ctx context.Context, in *TextToSpeechRequest, opts ...grpc.CallOption) (TextToSpeechService_StreamTextToSpeechClient, error)
-	// Stream request: Stream of text chunks in, complete audio out
-	StreamTextToSpeechRequest(ctx context.Context, opts ...grpc.CallOption) (TextToSpeechService_StreamTextToSpeechRequestClient, error)
-	// Bidirectional: Stream of text chunks in, stream of audio chunks out
-	StreamTextToSpeechBidirectional(ctx context.Context, opts ...grpc.CallOption) (TextToSpeechService_StreamTextToSpeechBidirectionalClient, error)
+	// Unary: Text in, Audio out
+	UnaryConvertTextToSpeech(ctx context.Context, in *TextToSpeechRequest, opts ...grpc.CallOption) (*TextToSpeechResponse, error)
+	// Server streaming: Long text in, stream of audio chunks out
+	ServerStreamTextToSpeech(ctx context.Context, in *TextToSpeechRequest, opts ...grpc.CallOption) (TextToSpeechService_ServerStreamTextToSpeechClient, error)
+	// Client streaming: Stream of text chunks in, complete audio out
+	ClientStreamTextToSpeech(ctx context.Context, opts ...grpc.CallOption) (TextToSpeechService_ClientStreamTextToSpeechClient, error)
+	// Bidirectional streaming: Stream of text chunks in, stream of audio chunks out
+	BidirectionalStreamTextToSpeech(ctx context.Context, opts ...grpc.CallOption) (TextToSpeechService_BidirectionalStreamTextToSpeechClient, error)
 }
 
 type textToSpeechServiceClient struct {
@@ -40,21 +40,21 @@ func NewTextToSpeechServiceClient(cc grpc.ClientConnInterface) TextToSpeechServi
 	return &textToSpeechServiceClient{cc}
 }
 
-func (c *textToSpeechServiceClient) ConvertTextToSpeech(ctx context.Context, in *TextToSpeechRequest, opts ...grpc.CallOption) (*TextToSpeechResponse, error) {
+func (c *textToSpeechServiceClient) UnaryConvertTextToSpeech(ctx context.Context, in *TextToSpeechRequest, opts ...grpc.CallOption) (*TextToSpeechResponse, error) {
 	out := new(TextToSpeechResponse)
-	err := c.cc.Invoke(ctx, "/voice.TextToSpeechService/ConvertTextToSpeech", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/voice.TextToSpeechService/UnaryConvertTextToSpeech", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *textToSpeechServiceClient) StreamTextToSpeech(ctx context.Context, in *TextToSpeechRequest, opts ...grpc.CallOption) (TextToSpeechService_StreamTextToSpeechClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TextToSpeechService_ServiceDesc.Streams[0], "/voice.TextToSpeechService/StreamTextToSpeech", opts...)
+func (c *textToSpeechServiceClient) ServerStreamTextToSpeech(ctx context.Context, in *TextToSpeechRequest, opts ...grpc.CallOption) (TextToSpeechService_ServerStreamTextToSpeechClient, error) {
+	stream, err := c.cc.NewStream(ctx, &TextToSpeechService_ServiceDesc.Streams[0], "/voice.TextToSpeechService/ServerStreamTextToSpeech", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &textToSpeechServiceStreamTextToSpeechClient{stream}
+	x := &textToSpeechServiceServerStreamTextToSpeechClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -64,16 +64,16 @@ func (c *textToSpeechServiceClient) StreamTextToSpeech(ctx context.Context, in *
 	return x, nil
 }
 
-type TextToSpeechService_StreamTextToSpeechClient interface {
+type TextToSpeechService_ServerStreamTextToSpeechClient interface {
 	Recv() (*AudioChunk, error)
 	grpc.ClientStream
 }
 
-type textToSpeechServiceStreamTextToSpeechClient struct {
+type textToSpeechServiceServerStreamTextToSpeechClient struct {
 	grpc.ClientStream
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechClient) Recv() (*AudioChunk, error) {
+func (x *textToSpeechServiceServerStreamTextToSpeechClient) Recv() (*AudioChunk, error) {
 	m := new(AudioChunk)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -81,30 +81,30 @@ func (x *textToSpeechServiceStreamTextToSpeechClient) Recv() (*AudioChunk, error
 	return m, nil
 }
 
-func (c *textToSpeechServiceClient) StreamTextToSpeechRequest(ctx context.Context, opts ...grpc.CallOption) (TextToSpeechService_StreamTextToSpeechRequestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TextToSpeechService_ServiceDesc.Streams[1], "/voice.TextToSpeechService/StreamTextToSpeechRequest", opts...)
+func (c *textToSpeechServiceClient) ClientStreamTextToSpeech(ctx context.Context, opts ...grpc.CallOption) (TextToSpeechService_ClientStreamTextToSpeechClient, error) {
+	stream, err := c.cc.NewStream(ctx, &TextToSpeechService_ServiceDesc.Streams[1], "/voice.TextToSpeechService/ClientStreamTextToSpeech", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &textToSpeechServiceStreamTextToSpeechRequestClient{stream}
+	x := &textToSpeechServiceClientStreamTextToSpeechClient{stream}
 	return x, nil
 }
 
-type TextToSpeechService_StreamTextToSpeechRequestClient interface {
+type TextToSpeechService_ClientStreamTextToSpeechClient interface {
 	Send(*TextChunk) error
 	CloseAndRecv() (*TextToSpeechResponse, error)
 	grpc.ClientStream
 }
 
-type textToSpeechServiceStreamTextToSpeechRequestClient struct {
+type textToSpeechServiceClientStreamTextToSpeechClient struct {
 	grpc.ClientStream
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechRequestClient) Send(m *TextChunk) error {
+func (x *textToSpeechServiceClientStreamTextToSpeechClient) Send(m *TextChunk) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechRequestClient) CloseAndRecv() (*TextToSpeechResponse, error) {
+func (x *textToSpeechServiceClientStreamTextToSpeechClient) CloseAndRecv() (*TextToSpeechResponse, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
@@ -115,30 +115,30 @@ func (x *textToSpeechServiceStreamTextToSpeechRequestClient) CloseAndRecv() (*Te
 	return m, nil
 }
 
-func (c *textToSpeechServiceClient) StreamTextToSpeechBidirectional(ctx context.Context, opts ...grpc.CallOption) (TextToSpeechService_StreamTextToSpeechBidirectionalClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TextToSpeechService_ServiceDesc.Streams[2], "/voice.TextToSpeechService/StreamTextToSpeechBidirectional", opts...)
+func (c *textToSpeechServiceClient) BidirectionalStreamTextToSpeech(ctx context.Context, opts ...grpc.CallOption) (TextToSpeechService_BidirectionalStreamTextToSpeechClient, error) {
+	stream, err := c.cc.NewStream(ctx, &TextToSpeechService_ServiceDesc.Streams[2], "/voice.TextToSpeechService/BidirectionalStreamTextToSpeech", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &textToSpeechServiceStreamTextToSpeechBidirectionalClient{stream}
+	x := &textToSpeechServiceBidirectionalStreamTextToSpeechClient{stream}
 	return x, nil
 }
 
-type TextToSpeechService_StreamTextToSpeechBidirectionalClient interface {
+type TextToSpeechService_BidirectionalStreamTextToSpeechClient interface {
 	Send(*TextChunk) error
 	Recv() (*AudioChunk, error)
 	grpc.ClientStream
 }
 
-type textToSpeechServiceStreamTextToSpeechBidirectionalClient struct {
+type textToSpeechServiceBidirectionalStreamTextToSpeechClient struct {
 	grpc.ClientStream
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechBidirectionalClient) Send(m *TextChunk) error {
+func (x *textToSpeechServiceBidirectionalStreamTextToSpeechClient) Send(m *TextChunk) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechBidirectionalClient) Recv() (*AudioChunk, error) {
+func (x *textToSpeechServiceBidirectionalStreamTextToSpeechClient) Recv() (*AudioChunk, error) {
 	m := new(AudioChunk)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -150,14 +150,14 @@ func (x *textToSpeechServiceStreamTextToSpeechBidirectionalClient) Recv() (*Audi
 // All implementations must embed UnimplementedTextToSpeechServiceServer
 // for forward compatibility
 type TextToSpeechServiceServer interface {
-	// Simple: Text in, Audio out
-	ConvertTextToSpeech(context.Context, *TextToSpeechRequest) (*TextToSpeechResponse, error)
-	// Stream response: Long text in, stream of audio chunks out
-	StreamTextToSpeech(*TextToSpeechRequest, TextToSpeechService_StreamTextToSpeechServer) error
-	// Stream request: Stream of text chunks in, complete audio out
-	StreamTextToSpeechRequest(TextToSpeechService_StreamTextToSpeechRequestServer) error
-	// Bidirectional: Stream of text chunks in, stream of audio chunks out
-	StreamTextToSpeechBidirectional(TextToSpeechService_StreamTextToSpeechBidirectionalServer) error
+	// Unary: Text in, Audio out
+	UnaryConvertTextToSpeech(context.Context, *TextToSpeechRequest) (*TextToSpeechResponse, error)
+	// Server streaming: Long text in, stream of audio chunks out
+	ServerStreamTextToSpeech(*TextToSpeechRequest, TextToSpeechService_ServerStreamTextToSpeechServer) error
+	// Client streaming: Stream of text chunks in, complete audio out
+	ClientStreamTextToSpeech(TextToSpeechService_ClientStreamTextToSpeechServer) error
+	// Bidirectional streaming: Stream of text chunks in, stream of audio chunks out
+	BidirectionalStreamTextToSpeech(TextToSpeechService_BidirectionalStreamTextToSpeechServer) error
 	mustEmbedUnimplementedTextToSpeechServiceServer()
 }
 
@@ -165,17 +165,17 @@ type TextToSpeechServiceServer interface {
 type UnimplementedTextToSpeechServiceServer struct {
 }
 
-func (UnimplementedTextToSpeechServiceServer) ConvertTextToSpeech(context.Context, *TextToSpeechRequest) (*TextToSpeechResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ConvertTextToSpeech not implemented")
+func (UnimplementedTextToSpeechServiceServer) UnaryConvertTextToSpeech(context.Context, *TextToSpeechRequest) (*TextToSpeechResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnaryConvertTextToSpeech not implemented")
 }
-func (UnimplementedTextToSpeechServiceServer) StreamTextToSpeech(*TextToSpeechRequest, TextToSpeechService_StreamTextToSpeechServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamTextToSpeech not implemented")
+func (UnimplementedTextToSpeechServiceServer) ServerStreamTextToSpeech(*TextToSpeechRequest, TextToSpeechService_ServerStreamTextToSpeechServer) error {
+	return status.Errorf(codes.Unimplemented, "method ServerStreamTextToSpeech not implemented")
 }
-func (UnimplementedTextToSpeechServiceServer) StreamTextToSpeechRequest(TextToSpeechService_StreamTextToSpeechRequestServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamTextToSpeechRequest not implemented")
+func (UnimplementedTextToSpeechServiceServer) ClientStreamTextToSpeech(TextToSpeechService_ClientStreamTextToSpeechServer) error {
+	return status.Errorf(codes.Unimplemented, "method ClientStreamTextToSpeech not implemented")
 }
-func (UnimplementedTextToSpeechServiceServer) StreamTextToSpeechBidirectional(TextToSpeechService_StreamTextToSpeechBidirectionalServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamTextToSpeechBidirectional not implemented")
+func (UnimplementedTextToSpeechServiceServer) BidirectionalStreamTextToSpeech(TextToSpeechService_BidirectionalStreamTextToSpeechServer) error {
+	return status.Errorf(codes.Unimplemented, "method BidirectionalStreamTextToSpeech not implemented")
 }
 func (UnimplementedTextToSpeechServiceServer) mustEmbedUnimplementedTextToSpeechServiceServer() {}
 
@@ -190,64 +190,64 @@ func RegisterTextToSpeechServiceServer(s grpc.ServiceRegistrar, srv TextToSpeech
 	s.RegisterService(&TextToSpeechService_ServiceDesc, srv)
 }
 
-func _TextToSpeechService_ConvertTextToSpeech_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TextToSpeechService_UnaryConvertTextToSpeech_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TextToSpeechRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TextToSpeechServiceServer).ConvertTextToSpeech(ctx, in)
+		return srv.(TextToSpeechServiceServer).UnaryConvertTextToSpeech(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/voice.TextToSpeechService/ConvertTextToSpeech",
+		FullMethod: "/voice.TextToSpeechService/UnaryConvertTextToSpeech",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TextToSpeechServiceServer).ConvertTextToSpeech(ctx, req.(*TextToSpeechRequest))
+		return srv.(TextToSpeechServiceServer).UnaryConvertTextToSpeech(ctx, req.(*TextToSpeechRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TextToSpeechService_StreamTextToSpeech_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _TextToSpeechService_ServerStreamTextToSpeech_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(TextToSpeechRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(TextToSpeechServiceServer).StreamTextToSpeech(m, &textToSpeechServiceStreamTextToSpeechServer{stream})
+	return srv.(TextToSpeechServiceServer).ServerStreamTextToSpeech(m, &textToSpeechServiceServerStreamTextToSpeechServer{stream})
 }
 
-type TextToSpeechService_StreamTextToSpeechServer interface {
+type TextToSpeechService_ServerStreamTextToSpeechServer interface {
 	Send(*AudioChunk) error
 	grpc.ServerStream
 }
 
-type textToSpeechServiceStreamTextToSpeechServer struct {
+type textToSpeechServiceServerStreamTextToSpeechServer struct {
 	grpc.ServerStream
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechServer) Send(m *AudioChunk) error {
+func (x *textToSpeechServiceServerStreamTextToSpeechServer) Send(m *AudioChunk) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _TextToSpeechService_StreamTextToSpeechRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(TextToSpeechServiceServer).StreamTextToSpeechRequest(&textToSpeechServiceStreamTextToSpeechRequestServer{stream})
+func _TextToSpeechService_ClientStreamTextToSpeech_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(TextToSpeechServiceServer).ClientStreamTextToSpeech(&textToSpeechServiceClientStreamTextToSpeechServer{stream})
 }
 
-type TextToSpeechService_StreamTextToSpeechRequestServer interface {
+type TextToSpeechService_ClientStreamTextToSpeechServer interface {
 	SendAndClose(*TextToSpeechResponse) error
 	Recv() (*TextChunk, error)
 	grpc.ServerStream
 }
 
-type textToSpeechServiceStreamTextToSpeechRequestServer struct {
+type textToSpeechServiceClientStreamTextToSpeechServer struct {
 	grpc.ServerStream
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechRequestServer) SendAndClose(m *TextToSpeechResponse) error {
+func (x *textToSpeechServiceClientStreamTextToSpeechServer) SendAndClose(m *TextToSpeechResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechRequestServer) Recv() (*TextChunk, error) {
+func (x *textToSpeechServiceClientStreamTextToSpeechServer) Recv() (*TextChunk, error) {
 	m := new(TextChunk)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -255,25 +255,25 @@ func (x *textToSpeechServiceStreamTextToSpeechRequestServer) Recv() (*TextChunk,
 	return m, nil
 }
 
-func _TextToSpeechService_StreamTextToSpeechBidirectional_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(TextToSpeechServiceServer).StreamTextToSpeechBidirectional(&textToSpeechServiceStreamTextToSpeechBidirectionalServer{stream})
+func _TextToSpeechService_BidirectionalStreamTextToSpeech_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(TextToSpeechServiceServer).BidirectionalStreamTextToSpeech(&textToSpeechServiceBidirectionalStreamTextToSpeechServer{stream})
 }
 
-type TextToSpeechService_StreamTextToSpeechBidirectionalServer interface {
+type TextToSpeechService_BidirectionalStreamTextToSpeechServer interface {
 	Send(*AudioChunk) error
 	Recv() (*TextChunk, error)
 	grpc.ServerStream
 }
 
-type textToSpeechServiceStreamTextToSpeechBidirectionalServer struct {
+type textToSpeechServiceBidirectionalStreamTextToSpeechServer struct {
 	grpc.ServerStream
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechBidirectionalServer) Send(m *AudioChunk) error {
+func (x *textToSpeechServiceBidirectionalStreamTextToSpeechServer) Send(m *AudioChunk) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *textToSpeechServiceStreamTextToSpeechBidirectionalServer) Recv() (*TextChunk, error) {
+func (x *textToSpeechServiceBidirectionalStreamTextToSpeechServer) Recv() (*TextChunk, error) {
 	m := new(TextChunk)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -289,43 +289,43 @@ var TextToSpeechService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*TextToSpeechServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ConvertTextToSpeech",
-			Handler:    _TextToSpeechService_ConvertTextToSpeech_Handler,
+			MethodName: "UnaryConvertTextToSpeech",
+			Handler:    _TextToSpeechService_UnaryConvertTextToSpeech_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamTextToSpeech",
-			Handler:       _TextToSpeechService_StreamTextToSpeech_Handler,
+			StreamName:    "ServerStreamTextToSpeech",
+			Handler:       _TextToSpeechService_ServerStreamTextToSpeech_Handler,
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "StreamTextToSpeechRequest",
-			Handler:       _TextToSpeechService_StreamTextToSpeechRequest_Handler,
+			StreamName:    "ClientStreamTextToSpeech",
+			Handler:       _TextToSpeechService_ClientStreamTextToSpeech_Handler,
 			ClientStreams: true,
 		},
 		{
-			StreamName:    "StreamTextToSpeechBidirectional",
-			Handler:       _TextToSpeechService_StreamTextToSpeechBidirectional_Handler,
+			StreamName:    "BidirectionalStreamTextToSpeech",
+			Handler:       _TextToSpeechService_BidirectionalStreamTextToSpeech_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},
-	Metadata: "proto/voice.proto",
+	Metadata: "voice.proto",
 }
 
 // SpeechToTextServiceClient is the client API for SpeechToTextService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SpeechToTextServiceClient interface {
-	// Simple: Audio in, Text out
-	ConvertSpeechToText(ctx context.Context, in *SpeechToTextRequest, opts ...grpc.CallOption) (*SpeechToTextResponse, error)
-	// Stream response: Complete audio in, stream of text chunks out
-	StreamSpeechToText(ctx context.Context, in *SpeechToTextRequest, opts ...grpc.CallOption) (SpeechToTextService_StreamSpeechToTextClient, error)
-	// Stream request: Stream of audio chunks in, complete text out
-	StreamSpeechToTextRequest(ctx context.Context, opts ...grpc.CallOption) (SpeechToTextService_StreamSpeechToTextRequestClient, error)
-	// Bidirectional: Stream of audio chunks in, stream of text chunks out
-	StreamSpeechToTextBidirectional(ctx context.Context, opts ...grpc.CallOption) (SpeechToTextService_StreamSpeechToTextBidirectionalClient, error)
+	// Unary: Audio in, Text out
+	UnaryConvertSpeechToText(ctx context.Context, in *SpeechToTextRequest, opts ...grpc.CallOption) (*SpeechToTextResponse, error)
+	// Server streaming: Complete audio in, stream of text chunks out
+	ServerStreamSpeechToText(ctx context.Context, in *SpeechToTextRequest, opts ...grpc.CallOption) (SpeechToTextService_ServerStreamSpeechToTextClient, error)
+	// Client streaming: Stream of audio chunks in, complete text out
+	ClientStreamSpeechToText(ctx context.Context, opts ...grpc.CallOption) (SpeechToTextService_ClientStreamSpeechToTextClient, error)
+	// Bidirectional streaming: Stream of audio chunks in, stream of text chunks out
+	BidirectionalStreamSpeechToText(ctx context.Context, opts ...grpc.CallOption) (SpeechToTextService_BidirectionalStreamSpeechToTextClient, error)
 }
 
 type speechToTextServiceClient struct {
@@ -336,21 +336,21 @@ func NewSpeechToTextServiceClient(cc grpc.ClientConnInterface) SpeechToTextServi
 	return &speechToTextServiceClient{cc}
 }
 
-func (c *speechToTextServiceClient) ConvertSpeechToText(ctx context.Context, in *SpeechToTextRequest, opts ...grpc.CallOption) (*SpeechToTextResponse, error) {
+func (c *speechToTextServiceClient) UnaryConvertSpeechToText(ctx context.Context, in *SpeechToTextRequest, opts ...grpc.CallOption) (*SpeechToTextResponse, error) {
 	out := new(SpeechToTextResponse)
-	err := c.cc.Invoke(ctx, "/voice.SpeechToTextService/ConvertSpeechToText", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/voice.SpeechToTextService/UnaryConvertSpeechToText", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *speechToTextServiceClient) StreamSpeechToText(ctx context.Context, in *SpeechToTextRequest, opts ...grpc.CallOption) (SpeechToTextService_StreamSpeechToTextClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SpeechToTextService_ServiceDesc.Streams[0], "/voice.SpeechToTextService/StreamSpeechToText", opts...)
+func (c *speechToTextServiceClient) ServerStreamSpeechToText(ctx context.Context, in *SpeechToTextRequest, opts ...grpc.CallOption) (SpeechToTextService_ServerStreamSpeechToTextClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SpeechToTextService_ServiceDesc.Streams[0], "/voice.SpeechToTextService/ServerStreamSpeechToText", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &speechToTextServiceStreamSpeechToTextClient{stream}
+	x := &speechToTextServiceServerStreamSpeechToTextClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -360,16 +360,16 @@ func (c *speechToTextServiceClient) StreamSpeechToText(ctx context.Context, in *
 	return x, nil
 }
 
-type SpeechToTextService_StreamSpeechToTextClient interface {
+type SpeechToTextService_ServerStreamSpeechToTextClient interface {
 	Recv() (*TranscriptionChunk, error)
 	grpc.ClientStream
 }
 
-type speechToTextServiceStreamSpeechToTextClient struct {
+type speechToTextServiceServerStreamSpeechToTextClient struct {
 	grpc.ClientStream
 }
 
-func (x *speechToTextServiceStreamSpeechToTextClient) Recv() (*TranscriptionChunk, error) {
+func (x *speechToTextServiceServerStreamSpeechToTextClient) Recv() (*TranscriptionChunk, error) {
 	m := new(TranscriptionChunk)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -377,30 +377,30 @@ func (x *speechToTextServiceStreamSpeechToTextClient) Recv() (*TranscriptionChun
 	return m, nil
 }
 
-func (c *speechToTextServiceClient) StreamSpeechToTextRequest(ctx context.Context, opts ...grpc.CallOption) (SpeechToTextService_StreamSpeechToTextRequestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SpeechToTextService_ServiceDesc.Streams[1], "/voice.SpeechToTextService/StreamSpeechToTextRequest", opts...)
+func (c *speechToTextServiceClient) ClientStreamSpeechToText(ctx context.Context, opts ...grpc.CallOption) (SpeechToTextService_ClientStreamSpeechToTextClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SpeechToTextService_ServiceDesc.Streams[1], "/voice.SpeechToTextService/ClientStreamSpeechToText", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &speechToTextServiceStreamSpeechToTextRequestClient{stream}
+	x := &speechToTextServiceClientStreamSpeechToTextClient{stream}
 	return x, nil
 }
 
-type SpeechToTextService_StreamSpeechToTextRequestClient interface {
+type SpeechToTextService_ClientStreamSpeechToTextClient interface {
 	Send(*AudioChunk) error
 	CloseAndRecv() (*SpeechToTextResponse, error)
 	grpc.ClientStream
 }
 
-type speechToTextServiceStreamSpeechToTextRequestClient struct {
+type speechToTextServiceClientStreamSpeechToTextClient struct {
 	grpc.ClientStream
 }
 
-func (x *speechToTextServiceStreamSpeechToTextRequestClient) Send(m *AudioChunk) error {
+func (x *speechToTextServiceClientStreamSpeechToTextClient) Send(m *AudioChunk) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *speechToTextServiceStreamSpeechToTextRequestClient) CloseAndRecv() (*SpeechToTextResponse, error) {
+func (x *speechToTextServiceClientStreamSpeechToTextClient) CloseAndRecv() (*SpeechToTextResponse, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
@@ -411,30 +411,30 @@ func (x *speechToTextServiceStreamSpeechToTextRequestClient) CloseAndRecv() (*Sp
 	return m, nil
 }
 
-func (c *speechToTextServiceClient) StreamSpeechToTextBidirectional(ctx context.Context, opts ...grpc.CallOption) (SpeechToTextService_StreamSpeechToTextBidirectionalClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SpeechToTextService_ServiceDesc.Streams[2], "/voice.SpeechToTextService/StreamSpeechToTextBidirectional", opts...)
+func (c *speechToTextServiceClient) BidirectionalStreamSpeechToText(ctx context.Context, opts ...grpc.CallOption) (SpeechToTextService_BidirectionalStreamSpeechToTextClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SpeechToTextService_ServiceDesc.Streams[2], "/voice.SpeechToTextService/BidirectionalStreamSpeechToText", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &speechToTextServiceStreamSpeechToTextBidirectionalClient{stream}
+	x := &speechToTextServiceBidirectionalStreamSpeechToTextClient{stream}
 	return x, nil
 }
 
-type SpeechToTextService_StreamSpeechToTextBidirectionalClient interface {
+type SpeechToTextService_BidirectionalStreamSpeechToTextClient interface {
 	Send(*AudioChunk) error
 	Recv() (*TranscriptionChunk, error)
 	grpc.ClientStream
 }
 
-type speechToTextServiceStreamSpeechToTextBidirectionalClient struct {
+type speechToTextServiceBidirectionalStreamSpeechToTextClient struct {
 	grpc.ClientStream
 }
 
-func (x *speechToTextServiceStreamSpeechToTextBidirectionalClient) Send(m *AudioChunk) error {
+func (x *speechToTextServiceBidirectionalStreamSpeechToTextClient) Send(m *AudioChunk) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *speechToTextServiceStreamSpeechToTextBidirectionalClient) Recv() (*TranscriptionChunk, error) {
+func (x *speechToTextServiceBidirectionalStreamSpeechToTextClient) Recv() (*TranscriptionChunk, error) {
 	m := new(TranscriptionChunk)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -446,14 +446,14 @@ func (x *speechToTextServiceStreamSpeechToTextBidirectionalClient) Recv() (*Tran
 // All implementations must embed UnimplementedSpeechToTextServiceServer
 // for forward compatibility
 type SpeechToTextServiceServer interface {
-	// Simple: Audio in, Text out
-	ConvertSpeechToText(context.Context, *SpeechToTextRequest) (*SpeechToTextResponse, error)
-	// Stream response: Complete audio in, stream of text chunks out
-	StreamSpeechToText(*SpeechToTextRequest, SpeechToTextService_StreamSpeechToTextServer) error
-	// Stream request: Stream of audio chunks in, complete text out
-	StreamSpeechToTextRequest(SpeechToTextService_StreamSpeechToTextRequestServer) error
-	// Bidirectional: Stream of audio chunks in, stream of text chunks out
-	StreamSpeechToTextBidirectional(SpeechToTextService_StreamSpeechToTextBidirectionalServer) error
+	// Unary: Audio in, Text out
+	UnaryConvertSpeechToText(context.Context, *SpeechToTextRequest) (*SpeechToTextResponse, error)
+	// Server streaming: Complete audio in, stream of text chunks out
+	ServerStreamSpeechToText(*SpeechToTextRequest, SpeechToTextService_ServerStreamSpeechToTextServer) error
+	// Client streaming: Stream of audio chunks in, complete text out
+	ClientStreamSpeechToText(SpeechToTextService_ClientStreamSpeechToTextServer) error
+	// Bidirectional streaming: Stream of audio chunks in, stream of text chunks out
+	BidirectionalStreamSpeechToText(SpeechToTextService_BidirectionalStreamSpeechToTextServer) error
 	mustEmbedUnimplementedSpeechToTextServiceServer()
 }
 
@@ -461,17 +461,17 @@ type SpeechToTextServiceServer interface {
 type UnimplementedSpeechToTextServiceServer struct {
 }
 
-func (UnimplementedSpeechToTextServiceServer) ConvertSpeechToText(context.Context, *SpeechToTextRequest) (*SpeechToTextResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ConvertSpeechToText not implemented")
+func (UnimplementedSpeechToTextServiceServer) UnaryConvertSpeechToText(context.Context, *SpeechToTextRequest) (*SpeechToTextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnaryConvertSpeechToText not implemented")
 }
-func (UnimplementedSpeechToTextServiceServer) StreamSpeechToText(*SpeechToTextRequest, SpeechToTextService_StreamSpeechToTextServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamSpeechToText not implemented")
+func (UnimplementedSpeechToTextServiceServer) ServerStreamSpeechToText(*SpeechToTextRequest, SpeechToTextService_ServerStreamSpeechToTextServer) error {
+	return status.Errorf(codes.Unimplemented, "method ServerStreamSpeechToText not implemented")
 }
-func (UnimplementedSpeechToTextServiceServer) StreamSpeechToTextRequest(SpeechToTextService_StreamSpeechToTextRequestServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamSpeechToTextRequest not implemented")
+func (UnimplementedSpeechToTextServiceServer) ClientStreamSpeechToText(SpeechToTextService_ClientStreamSpeechToTextServer) error {
+	return status.Errorf(codes.Unimplemented, "method ClientStreamSpeechToText not implemented")
 }
-func (UnimplementedSpeechToTextServiceServer) StreamSpeechToTextBidirectional(SpeechToTextService_StreamSpeechToTextBidirectionalServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamSpeechToTextBidirectional not implemented")
+func (UnimplementedSpeechToTextServiceServer) BidirectionalStreamSpeechToText(SpeechToTextService_BidirectionalStreamSpeechToTextServer) error {
+	return status.Errorf(codes.Unimplemented, "method BidirectionalStreamSpeechToText not implemented")
 }
 func (UnimplementedSpeechToTextServiceServer) mustEmbedUnimplementedSpeechToTextServiceServer() {}
 
@@ -486,64 +486,64 @@ func RegisterSpeechToTextServiceServer(s grpc.ServiceRegistrar, srv SpeechToText
 	s.RegisterService(&SpeechToTextService_ServiceDesc, srv)
 }
 
-func _SpeechToTextService_ConvertSpeechToText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SpeechToTextService_UnaryConvertSpeechToText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SpeechToTextRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SpeechToTextServiceServer).ConvertSpeechToText(ctx, in)
+		return srv.(SpeechToTextServiceServer).UnaryConvertSpeechToText(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/voice.SpeechToTextService/ConvertSpeechToText",
+		FullMethod: "/voice.SpeechToTextService/UnaryConvertSpeechToText",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SpeechToTextServiceServer).ConvertSpeechToText(ctx, req.(*SpeechToTextRequest))
+		return srv.(SpeechToTextServiceServer).UnaryConvertSpeechToText(ctx, req.(*SpeechToTextRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SpeechToTextService_StreamSpeechToText_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _SpeechToTextService_ServerStreamSpeechToText_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(SpeechToTextRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(SpeechToTextServiceServer).StreamSpeechToText(m, &speechToTextServiceStreamSpeechToTextServer{stream})
+	return srv.(SpeechToTextServiceServer).ServerStreamSpeechToText(m, &speechToTextServiceServerStreamSpeechToTextServer{stream})
 }
 
-type SpeechToTextService_StreamSpeechToTextServer interface {
+type SpeechToTextService_ServerStreamSpeechToTextServer interface {
 	Send(*TranscriptionChunk) error
 	grpc.ServerStream
 }
 
-type speechToTextServiceStreamSpeechToTextServer struct {
+type speechToTextServiceServerStreamSpeechToTextServer struct {
 	grpc.ServerStream
 }
 
-func (x *speechToTextServiceStreamSpeechToTextServer) Send(m *TranscriptionChunk) error {
+func (x *speechToTextServiceServerStreamSpeechToTextServer) Send(m *TranscriptionChunk) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _SpeechToTextService_StreamSpeechToTextRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SpeechToTextServiceServer).StreamSpeechToTextRequest(&speechToTextServiceStreamSpeechToTextRequestServer{stream})
+func _SpeechToTextService_ClientStreamSpeechToText_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(SpeechToTextServiceServer).ClientStreamSpeechToText(&speechToTextServiceClientStreamSpeechToTextServer{stream})
 }
 
-type SpeechToTextService_StreamSpeechToTextRequestServer interface {
+type SpeechToTextService_ClientStreamSpeechToTextServer interface {
 	SendAndClose(*SpeechToTextResponse) error
 	Recv() (*AudioChunk, error)
 	grpc.ServerStream
 }
 
-type speechToTextServiceStreamSpeechToTextRequestServer struct {
+type speechToTextServiceClientStreamSpeechToTextServer struct {
 	grpc.ServerStream
 }
 
-func (x *speechToTextServiceStreamSpeechToTextRequestServer) SendAndClose(m *SpeechToTextResponse) error {
+func (x *speechToTextServiceClientStreamSpeechToTextServer) SendAndClose(m *SpeechToTextResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *speechToTextServiceStreamSpeechToTextRequestServer) Recv() (*AudioChunk, error) {
+func (x *speechToTextServiceClientStreamSpeechToTextServer) Recv() (*AudioChunk, error) {
 	m := new(AudioChunk)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -551,25 +551,25 @@ func (x *speechToTextServiceStreamSpeechToTextRequestServer) Recv() (*AudioChunk
 	return m, nil
 }
 
-func _SpeechToTextService_StreamSpeechToTextBidirectional_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SpeechToTextServiceServer).StreamSpeechToTextBidirectional(&speechToTextServiceStreamSpeechToTextBidirectionalServer{stream})
+func _SpeechToTextService_BidirectionalStreamSpeechToText_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(SpeechToTextServiceServer).BidirectionalStreamSpeechToText(&speechToTextServiceBidirectionalStreamSpeechToTextServer{stream})
 }
 
-type SpeechToTextService_StreamSpeechToTextBidirectionalServer interface {
+type SpeechToTextService_BidirectionalStreamSpeechToTextServer interface {
 	Send(*TranscriptionChunk) error
 	Recv() (*AudioChunk, error)
 	grpc.ServerStream
 }
 
-type speechToTextServiceStreamSpeechToTextBidirectionalServer struct {
+type speechToTextServiceBidirectionalStreamSpeechToTextServer struct {
 	grpc.ServerStream
 }
 
-func (x *speechToTextServiceStreamSpeechToTextBidirectionalServer) Send(m *TranscriptionChunk) error {
+func (x *speechToTextServiceBidirectionalStreamSpeechToTextServer) Send(m *TranscriptionChunk) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *speechToTextServiceStreamSpeechToTextBidirectionalServer) Recv() (*AudioChunk, error) {
+func (x *speechToTextServiceBidirectionalStreamSpeechToTextServer) Recv() (*AudioChunk, error) {
 	m := new(AudioChunk)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -585,27 +585,27 @@ var SpeechToTextService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SpeechToTextServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ConvertSpeechToText",
-			Handler:    _SpeechToTextService_ConvertSpeechToText_Handler,
+			MethodName: "UnaryConvertSpeechToText",
+			Handler:    _SpeechToTextService_UnaryConvertSpeechToText_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamSpeechToText",
-			Handler:       _SpeechToTextService_StreamSpeechToText_Handler,
+			StreamName:    "ServerStreamSpeechToText",
+			Handler:       _SpeechToTextService_ServerStreamSpeechToText_Handler,
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "StreamSpeechToTextRequest",
-			Handler:       _SpeechToTextService_StreamSpeechToTextRequest_Handler,
+			StreamName:    "ClientStreamSpeechToText",
+			Handler:       _SpeechToTextService_ClientStreamSpeechToText_Handler,
 			ClientStreams: true,
 		},
 		{
-			StreamName:    "StreamSpeechToTextBidirectional",
-			Handler:       _SpeechToTextService_StreamSpeechToTextBidirectional_Handler,
+			StreamName:    "BidirectionalStreamSpeechToText",
+			Handler:       _SpeechToTextService_BidirectionalStreamSpeechToText_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},
-	Metadata: "proto/voice.proto",
+	Metadata: "voice.proto",
 }

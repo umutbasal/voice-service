@@ -85,8 +85,8 @@ def load_and_preprocess_audio(audio_bytes):
     return speech_array
 
 class TextToSpeechServicer(voice_pb2_grpc.TextToSpeechServiceServicer):
-    def ConvertTextToSpeech(self, request, context):
-        logger.info("Received ConvertTextToSpeech request")
+    def UnaryConvertTextToSpeech(self, request, context):
+        logger.info("Received UnaryConvertTextToSpeech request")
         logger.debug(f"Input text: {request.text[:50]}...")
         
         inputs = tts_tokenizer(request.text, return_tensors="pt")
@@ -101,13 +101,13 @@ class TextToSpeechServicer(voice_pb2_grpc.TextToSpeechServiceServicer):
             logger.info("Successfully converted text to speech")
             return voice_pb2.TextToSpeechResponse(audio_data=audio_bytes.getvalue())
         except Exception as e:
-            logger.error(f"Error in ConvertTextToSpeech: {str(e)}")
+            logger.error(f"Error in UnaryConvertTextToSpeech: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             raise
     
-    def StreamTextToSpeech(self, request, context):
-        logger.info("Starting StreamTextToSpeech")
+    def ServerStreamTextToSpeech(self, request, context):
+        logger.info("Starting ServerStreamTextToSpeech")
         logger.debug(f"Input text: {request.text[:50]}...")
         chunks = split_into_chunks(request.text)
         logger.info(f"Processing {len(chunks)} text chunks")
@@ -124,15 +124,15 @@ class TextToSpeechServicer(voice_pb2_grpc.TextToSpeechServiceServicer):
                     sf.write(audio_bytes, output.numpy().squeeze(), tts_model.config.sampling_rate, format='WAV')
                     
                     yield voice_pb2.AudioChunk(audio_data=audio_bytes.getvalue())
-            logger.info("Successfully completed StreamTextToSpeech")
+            logger.info("Successfully completed ServerStreamTextToSpeech")
         except Exception as e:
-            logger.error(f"Error in StreamTextToSpeech: {str(e)}")
+            logger.error(f"Error in ServerStreamTextToSpeech: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             raise
     
-    def StreamTextToSpeechRequest(self, request_iterator, context):
-        logger.info("Starting StreamTextToSpeechRequest")
+    def ClientStreamTextToSpeech(self, request_iterator, context):
+        logger.info("Starting ClientStreamTextToSpeech")
         all_waveforms = []
         chunk_count = 0
         
@@ -155,13 +155,13 @@ class TextToSpeechServicer(voice_pb2_grpc.TextToSpeechServiceServicer):
             logger.info(f"Successfully processed {chunk_count} chunks")
             return voice_pb2.TextToSpeechResponse(audio_data=audio_bytes.getvalue())
         except Exception as e:
-            logger.error(f"Error in StreamTextToSpeechRequest: {str(e)}")
+            logger.error(f"Error in ClientStreamTextToSpeech: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             raise
     
-    def StreamTextToSpeechBidirectional(self, request_iterator, context):
-        logger.info("Starting StreamTextToSpeechBidirectional")
+    def BidirectionalStreamTextToSpeech(self, request_iterator, context):
+        logger.info("Starting BidirectionalStreamTextToSpeech")
         chunk_count = 0
         
         try:
@@ -179,14 +179,14 @@ class TextToSpeechServicer(voice_pb2_grpc.TextToSpeechServiceServicer):
                     yield voice_pb2.AudioChunk(audio_data=audio_bytes.getvalue())
             logger.info(f"Successfully processed {chunk_count} chunks")
         except Exception as e:
-            logger.error(f"Error in StreamTextToSpeechBidirectional: {str(e)}")
+            logger.error(f"Error in BidirectionalStreamTextToSpeech: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             raise
 
 class SpeechToTextServicer(voice_pb2_grpc.SpeechToTextServiceServicer):
-    def ConvertSpeechToText(self, request, context):
-        logger.info("Starting ConvertSpeechToText")
+    def UnaryConvertSpeechToText(self, request, context):
+        logger.info("Starting UnaryConvertSpeechToText")
         
         try:
             speech_array = load_and_preprocess_audio(request.audio_data)
@@ -202,13 +202,13 @@ class SpeechToTextServicer(voice_pb2_grpc.SpeechToTextServiceServicer):
             logger.debug(f"Transcribed text: {text[:50]}...")
             return voice_pb2.SpeechToTextResponse(transcribed_text=text)
         except Exception as e:
-            logger.error(f"Error in ConvertSpeechToText: {str(e)}")
+            logger.error(f"Error in UnaryConvertSpeechToText: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             raise
     
-    def StreamSpeechToText(self, request, context):
-        logger.info("Starting StreamSpeechToText")
+    def ServerStreamSpeechToText(self, request, context):
+        logger.info("Starting ServerStreamSpeechToText")
         
         try:
             speech_array = load_and_preprocess_audio(request.audio_data)
@@ -236,13 +236,13 @@ class SpeechToTextServicer(voice_pb2_grpc.SpeechToTextServiceServicer):
             
             logger.info("Successfully completed streaming transcription")
         except Exception as e:
-            logger.error(f"Error in StreamSpeechToText: {str(e)}")
+            logger.error(f"Error in ServerStreamSpeechToText: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             raise
     
-    def StreamSpeechToTextRequest(self, request_iterator, context):
-        logger.info("Starting StreamSpeechToTextRequest")
+    def ClientStreamSpeechToText(self, request_iterator, context):
+        logger.info("Starting ClientStreamSpeechToText")
         all_audio = []
         chunk_count = 0
         
@@ -267,13 +267,13 @@ class SpeechToTextServicer(voice_pb2_grpc.SpeechToTextServiceServicer):
             logger.debug(f"Final transcription: {text[:50]}...")
             return voice_pb2.SpeechToTextResponse(transcribed_text=text)
         except Exception as e:
-            logger.error(f"Error in StreamSpeechToTextRequest: {str(e)}")
+            logger.error(f"Error in ClientStreamSpeechToText: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             raise
     
-    def StreamSpeechToTextBidirectional(self, request_iterator, context):
-        logger.info("Starting StreamSpeechToTextBidirectional")
+    def BidirectionalStreamSpeechToText(self, request_iterator, context):
+        logger.info("Starting BidirectionalStreamSpeechToText")
         chunk_buffer = []
         chunk_size = int(5 * 16000)
         chunk_count = 0
@@ -319,7 +319,7 @@ class SpeechToTextServicer(voice_pb2_grpc.SpeechToTextServiceServicer):
 
             logger.info(f"Successfully processed {chunk_count} chunks")
         except Exception as e:
-            logger.error(f"Error in StreamSpeechToTextBidirectional: {str(e)}")
+            logger.error(f"Error in BidirectionalStreamSpeechToText: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             raise

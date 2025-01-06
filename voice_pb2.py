@@ -13,13 +13,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bvoice.proto\x12\x05voice\" \n\nAudioChunk\x12\x12\n\naudio_data\x18\x01 \x01(\x0c\"\x19\n\tTextChunk\x12\x0c\n\x04text\x18\x01 \x01(\t\"3\n\x12TranscriptionChunk\x12\x1d\n\x15partial_transcription\x18\x01 \x01(\t\"D\n\x13TextToSpeechRequest\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\r\n\x05voice\x18\x03 \x01(\t\"*\n\x14TextToSpeechResponse\x12\x12\n\naudio_data\x18\x01 \x01(\x0c\")\n\x13SpeechToTextRequest\x12\x12\n\naudio_data\x18\x01 \x01(\x0c\"0\n\x14SpeechToTextResponse\x12\x18\n\x10transcribed_text\x18\x01 \x01(\t2\xc6\x02\n\x13TextToSpeechService\x12N\n\x13\x43onvertTextToSpeech\x12\x1a.voice.TextToSpeechRequest\x1a\x1b.voice.TextToSpeechResponse\x12\x45\n\x12StreamTextToSpeech\x12\x1a.voice.TextToSpeechRequest\x1a\x11.voice.AudioChunk0\x01\x12L\n\x19StreamTextToSpeechRequest\x12\x10.voice.TextChunk\x1a\x1b.voice.TextToSpeechResponse(\x01\x12J\n\x1fStreamTextToSpeechBidirectional\x12\x10.voice.TextChunk\x1a\x11.voice.AudioChunk(\x01\x30\x01\x32\xd8\x02\n\x13SpeechToTextService\x12N\n\x13\x43onvertSpeechToText\x12\x1a.voice.SpeechToTextRequest\x1a\x1b.voice.SpeechToTextResponse\x12M\n\x12StreamSpeechToText\x12\x1a.voice.SpeechToTextRequest\x1a\x19.voice.TranscriptionChunk0\x01\x12M\n\x19StreamSpeechToTextRequest\x12\x11.voice.AudioChunk\x1a\x1b.voice.SpeechToTextResponse(\x01\x12S\n\x1fStreamSpeechToTextBidirectional\x12\x11.voice.AudioChunk\x1a\x19.voice.TranscriptionChunk(\x01\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bvoice.proto\x12\x05voice\" \n\nAudioChunk\x12\x12\n\naudio_data\x18\x01 \x01(\x0c\"\x19\n\tTextChunk\x12\x0c\n\x04text\x18\x01 \x01(\t\"3\n\x12TranscriptionChunk\x12\x1d\n\x15partial_transcription\x18\x01 \x01(\t\"D\n\x13TextToSpeechRequest\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\r\n\x05voice\x18\x03 \x01(\t\"*\n\x14TextToSpeechResponse\x12\x12\n\naudio_data\x18\x01 \x01(\x0c\")\n\x13SpeechToTextRequest\x12\x12\n\naudio_data\x18\x01 \x01(\x0c\"0\n\x14SpeechToTextResponse\x12\x18\n\x10transcribed_text\x18\x01 \x01(\t2\xd0\x02\n\x13TextToSpeechService\x12S\n\x18UnaryConvertTextToSpeech\x12\x1a.voice.TextToSpeechRequest\x1a\x1b.voice.TextToSpeechResponse\x12K\n\x18ServerStreamTextToSpeech\x12\x1a.voice.TextToSpeechRequest\x1a\x11.voice.AudioChunk0\x01\x12K\n\x18\x43lientStreamTextToSpeech\x12\x10.voice.TextChunk\x1a\x1b.voice.TextToSpeechResponse(\x01\x12J\n\x1f\x42idirectionalStreamTextToSpeech\x12\x10.voice.TextChunk\x1a\x11.voice.AudioChunk(\x01\x30\x01\x32\xe2\x02\n\x13SpeechToTextService\x12S\n\x18UnaryConvertSpeechToText\x12\x1a.voice.SpeechToTextRequest\x1a\x1b.voice.SpeechToTextResponse\x12S\n\x18ServerStreamSpeechToText\x12\x1a.voice.SpeechToTextRequest\x1a\x19.voice.TranscriptionChunk0\x01\x12L\n\x18\x43lientStreamSpeechToText\x12\x11.voice.AudioChunk\x1a\x1b.voice.SpeechToTextResponse(\x01\x12S\n\x1f\x42idirectionalStreamSpeechToText\x12\x11.voice.AudioChunk\x1a\x19.voice.TranscriptionChunk(\x01\x30\x01\x42\x1eZ\x1cvoice-assistant/client/protob\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'voice_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
+  DESCRIPTOR._serialized_options = b'Z\034voice-assistant/client/proto'
   _globals['_AUDIOCHUNK']._serialized_start=22
   _globals['_AUDIOCHUNK']._serialized_end=54
   _globals['_TEXTCHUNK']._serialized_start=56
@@ -35,7 +36,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_SPEECHTOTEXTRESPONSE']._serialized_start=293
   _globals['_SPEECHTOTEXTRESPONSE']._serialized_end=341
   _globals['_TEXTTOSPEECHSERVICE']._serialized_start=344
-  _globals['_TEXTTOSPEECHSERVICE']._serialized_end=670
-  _globals['_SPEECHTOTEXTSERVICE']._serialized_start=673
-  _globals['_SPEECHTOTEXTSERVICE']._serialized_end=1017
+  _globals['_TEXTTOSPEECHSERVICE']._serialized_end=680
+  _globals['_SPEECHTOTEXTSERVICE']._serialized_start=683
+  _globals['_SPEECHTOTEXTSERVICE']._serialized_end=1037
 # @@protoc_insertion_point(module_scope)

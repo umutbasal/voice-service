@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package voice;
+
+option go_package = "voice-assistant/client/proto";
+
+// Reusable Types
+message AudioChunk {
+  bytes audio_data = 1;  // Audio data chunk for Text-to-Speech and Speech-to-Text
+}
+
+message TextChunk {
+  string text = 1;  // Text chunk for Text-to-Speech
+}
+
+message TranscriptionChunk {
+  string partial_transcription = 1;  // Partial transcription chunk for Speech-to-Text
+}
+
+// Text-to-Speech Request/Response
+message TextToSpeechRequest {
+  string text = 1;
+  string language = 2;
+  string voice = 3;
+}
+
+message TextToSpeechResponse {
+  bytes audio_data = 1;  // The generated audio in a binary format (e.g., MP3, WAV)
+}
+
+// Speech-to-Text Request/Response
+message SpeechToTextRequest {
+  bytes audio_data = 1;  // The audio data for transcription
+}
+
+message SpeechToTextResponse {
+  string transcribed_text = 1;  // The transcribed text from the speech
+}
+
+// Text-to-Speech Service
+service TextToSpeechService {
+  // Simple: Text in, Audio out
+  rpc ConvertTextToSpeech(TextToSpeechRequest) returns (TextToSpeechResponse);
+
+  // Stream response: Long text in, stream of audio chunks out
+  rpc StreamTextToSpeech(TextToSpeechRequest) returns (stream AudioChunk);
+
+  // Stream request: Stream of text chunks in, complete audio out
+  rpc StreamTextToSpeechRequest(stream TextChunk) returns (TextToSpeechResponse);
+
+  // Bidirectional: Stream of text chunks in, stream of audio chunks out
+  rpc StreamTextToSpeechBidirectional(stream TextChunk) returns (stream AudioChunk);
+}
+
+// Speech-to-Text Service
+service SpeechToTextService {
+  // Simple: Audio in, Text out
+  rpc ConvertSpeechToText(SpeechToTextRequest) returns (SpeechToTextResponse);
+
+  // Stream response: Complete audio in, stream of text chunks out
+  rpc StreamSpeechToText(SpeechToTextRequest) returns (stream TranscriptionChunk);
+
+  // Stream request: Stream of audio chunks in, complete text out
+  rpc StreamSpeechToTextRequest(stream AudioChunk) returns (SpeechToTextResponse);
+
+  // Bidirectional: Stream of audio chunks in, stream of text chunks out
+  rpc StreamSpeechToTextBidirectional(stream AudioChunk) returns (stream TranscriptionChunk);
+} 

@@ -28,7 +28,7 @@ def load_and_preprocess_audio(file_path):
 def replace_unk(transcription):
     return transcription.replace("[UNK]", "ʼ")
 
-audio_file = "techno.wav"
+audio_file = "techno_streamed.wav"
 speech_array = load_and_preprocess_audio(audio_file)
 
 input_values = processor(speech_array, sampling_rate=16000, return_tensors="pt").input_values.to(device)

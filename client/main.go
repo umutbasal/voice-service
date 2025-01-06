@@ -28,32 +28,32 @@ func main() {
 	defer conn.Close()
 
 	// Create clients
-	//ttsClient := pb.NewTextToSpeechServiceClient(conn)
+	ttsClient := pb.NewTextToSpeechServiceClient(conn)
 	sttClient := pb.NewSpeechToTextServiceClient(conn)
 
-	// Example 1: Simple Text-to-Speech
-	// fmt.Println("\n=== Simple Text-to-Speech ===")
-	// simpleTextToSpeech(ttsClient)
+	//Example 1: Simple Text-to-Speech
+	fmt.Println("\n=== Simple Text-to-Speech ===")
+	simpleTextToSpeech(ttsClient)
 
-	// // Example 2: Streaming Text-to-Speech
-	// fmt.Println("\n=== Streaming Text-to-Speech ===")
-	// streamingTextToSpeech(ttsClient)
+	// Example 2: Streaming Text-to-Speech
+	fmt.Println("\n=== Streaming Text-to-Speech ===")
+	streamingTextToSpeech(ttsClient)
 
-	// // Example 3: Stream Text Request to Speech
-	// fmt.Println("\n=== Stream Text Request to Speech ===")
-	// streamTextRequestToSpeech(ttsClient)
+	// Example 3: Stream Text Request to Speech
+	fmt.Println("\n=== Stream Text Request to Speech ===")
+	streamTextRequestToSpeech(ttsClient)
 
-	// // Example 4: Bidirectional Text-to-Speech Streaming
-	// fmt.Println("\n=== Bidirectional Text-to-Speech Streaming ===")
-	// bidirectionalTextToSpeech(ttsClient)
+	// Example 4: Bidirectional Text-to-Speech Streaming
+	fmt.Println("\n=== Bidirectional Text-to-Speech Streaming ===")
+	bidirectionalTextToSpeech(ttsClient)
 
-	// // Example 5: Simple Speech-to-Text
-	// fmt.Println("\n=== Simple Speech-to-Text ===")
-	// simpleSpeechToText(sttClient)
+	// Example 5: Simple Speech-to-Text
+	fmt.Println("\n=== Simple Speech-to-Text ===")
+	simpleSpeechToText(sttClient)
 
-	// // Example 6: Streaming Speech-to-Text
-	// fmt.Println("\n=== Streaming Speech-to-Text ===")
-	// streamingSpeechToText(sttClient)
+	// Example 6: Streaming Speech-to-Text
+	fmt.Println("\n=== Streaming Speech-to-Text ===")
+	streamingSpeechToText(sttClient)
 
 	// Example 7: Stream Speech Request to Text
 	fmt.Println("\n=== Stream Speech Request to Text ===")
@@ -68,8 +68,9 @@ func simpleTextToSpeech(client pb.TextToSpeechServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
+	text := "Салом, хуш келибсиз!"
 	resp, err := client.ConvertTextToSpeech(ctx, &pb.TextToSpeechRequest{
-		Text:     "Салом, хуш келибсиз!",
+		Text:     text,
 		Language: "uz",
 		Voice:    "default",
 	})
@@ -77,6 +78,8 @@ func simpleTextToSpeech(client pb.TextToSpeechServiceClient) {
 		log.Fatalf("could not convert text to speech: %v", err)
 	}
 
+	// print text
+	fmt.Printf("Processed Text: %s\n", text)
 	// Save the audio to a file
 	err = os.WriteFile("output.wav", resp.AudioData, 0644)
 	if err != nil {
@@ -98,12 +101,8 @@ func streamingTextToSpeech(client pb.TextToSpeechServiceClient) {
 		log.Fatalf("could not stream text to speech: %v", err)
 	}
 
-	// Create a file to save all chunks
-	outFile, err := os.Create("output_streamed.wav")
-	if err != nil {
-		log.Fatalf("could not create output file: %v", err)
-	}
-	defer outFile.Close()
+	// print text
+	fmt.Printf("Processed Text: %s\n", uzbekText)
 
 	chunkCount := 0
 	for {
@@ -117,12 +116,14 @@ func streamingTextToSpeech(client pb.TextToSpeechServiceClient) {
 		chunkCount++
 		fmt.Printf("Received audio chunk %d of size: %d bytes\n", chunkCount, len(chunk.AudioData))
 
-		// Write chunk to file
-		if _, err := outFile.Write(chunk.AudioData); err != nil {
-			log.Fatalf("could not write chunk to file: %v", err)
+		// Save the audio to a file
+		err = os.WriteFile(fmt.Sprintf("output_streamed_%d.wav", chunkCount), chunk.AudioData, 0644)
+		if err != nil {
+			log.Fatalf("could not save audio file: %v", err)
 		}
+
+		fmt.Printf("Saved audio chunk %d to output_streamed_%d.wav\n", chunkCount, chunkCount)
 	}
-	fmt.Printf("Saved %d chunks to output_streamed.wav\n", chunkCount)
 }
 
 func streamTextRequestToSpeech(client pb.TextToSpeechServiceClient) {
@@ -173,13 +174,6 @@ func bidirectionalTextToSpeech(client pb.TextToSpeechServiceClient) {
 	// Create a channel to receive responses
 	waitc := make(chan struct{})
 
-	// Create a file to save all chunks
-	outFile, err := os.Create("output_bidirectional.wav")
-	if err != nil {
-		log.Fatalf("could not create output file: %v", err)
-	}
-	defer outFile.Close()
-
 	// Start goroutine to receive audio chunks
 	go func() {
 		chunkCount := 0
@@ -195,10 +189,12 @@ func bidirectionalTextToSpeech(client pb.TextToSpeechServiceClient) {
 			chunkCount++
 			fmt.Printf("Received audio chunk %d of size: %d bytes\n", chunkCount, len(chunk.AudioData))
 
-			// Write chunk to file
-			if _, err := outFile.Write(chunk.AudioData); err != nil {
-				log.Fatalf("could not write chunk to file: %v", err)
+			// Save the audio to a file
+			err = os.WriteFile(fmt.Sprintf("output_bidirectional_%d.wav", chunkCount), chunk.AudioData, 0644)
+			if err != nil {
+				log.Fatalf("could not save audio file: %v", err)
 			}
+			fmt.Printf("Saved audio chunk %d to output_bidirectional_%d.wav\n", chunkCount, chunkCount)
 		}
 	}()
 

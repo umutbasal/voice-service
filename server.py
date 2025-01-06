@@ -9,13 +9,29 @@ import numpy as np
 from transformers import VitsModel, AutoTokenizer, Wav2Vec2Processor, Wav2Vec2ForCTC
 import re
 import logging
+import signal
+import sys
+import threading
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Global flag for graceful shutdown
+is_shutting_down = threading.Event()
+
+def signal_handler(signum, frame):
+    """Handle shutdown signals gracefully"""
+    signal_name = 'SIGTERM' if signum == signal.SIGTERM else 'SIGINT'
+    logger.info(f"Received {signal_name}. Initiating graceful shutdown...")
+    is_shutting_down.set()
+
+# Register signal handlers
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
 
 # Initialize TTS models
 logger.info("Initializing TTS models...")
@@ -332,7 +348,18 @@ def serve():
     server.add_insecure_port('[::]:50051')
     server.start()
     logger.info("Server started on port 50051")
-    server.wait_for_termination()
+    
+    try:
+        # Wait for shutdown signal
+        while not is_shutting_down.is_set():
+            is_shutting_down.wait(timeout=1)
+    except Exception as e:
+        logger.error(f"Error during server operation: {str(e)}")
+    finally:
+        logger.info("Stopping server...")
+        # Stop accepting new requests
+        server.stop(grace=5)  # 5 seconds grace period
+        logger.info("Server stopped gracefully")
 
 if __name__ == '__main__':
     serve() 

@@ -4,9 +4,16 @@ A Proof of Concept (PoC) implementation demonstrating various gRPC streaming pat
 
 ## Features
 
-### **Text-to-Speech (TTS) and Speech-to-Text (STT) - All gRPC Patterns**
+### **Text-to-Speech (TTS)**
 
-- Unary: Simple one-request-one-response TTS - STT
-- Server Streaming: Single text or audio input, continuous partial transcriptions
-- Client Streaming: Multiple text or audio chunks, single combined transcription
+- Unary: Simple one-request-one-response TTS
+- Server Streaming: Single text input, continuous partial transcriptions
+- Client Streaming: Multiple text chunks, single combined transcription
 - Bidirectional Streaming: Continuous exchange of text and audio
+
+### **Speech-to-Text (STT)**
+
+- Unary: Simple one-request-one-response STT
+- Server Streaming: Single audio input, continuous partial transcriptions
+- Client Streaming: Multiple audio chunks, single combined transcription
+- Bidirectional Streaming: Continuous exchange of audio and text
